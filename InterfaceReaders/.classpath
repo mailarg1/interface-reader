@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/ms82398/My Documents/Matias/CITI/ECLIPSE/libJavaBatch/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Documents and Settings/ms82398/My Documents/Matias/CITI/ECLIPSE/libJavaBatch/log4j-1.2.16.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="C:/Users/ms82398/Documents/MATIAS/CITI/ECLIPSE/POI libraries/dom4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ms82398/Documents/MATIAS/CITI/ECLIPSE/POI libraries/ooxml-schemas-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ms82398/Documents/MATIAS/CITI/ECLIPSE/POI libraries/xmlbeans-2.6.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ms82398/Documents/MATIAS/CITI/ECLIPSE/POI libraries/poi-ooxml-3.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/ms82398/Documents/MATIAS/CITI/ECLIPSE/POI libraries/poi-3.10-FINAL.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
