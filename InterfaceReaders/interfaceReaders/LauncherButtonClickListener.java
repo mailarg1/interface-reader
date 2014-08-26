@@ -150,6 +150,7 @@ public class LauncherButtonClickListener implements ActionListener{
 				filename = feedFileName.getPath();
 		Sheet sheet_ml;
 		Record record_RF = null;
+		Integer index = new Integer(2);
 		
 	    try{
 	        fr = new FileReader(filename);
@@ -159,7 +160,8 @@ public class LauncherButtonClickListener implements ActionListener{
 	    	
     		while((str = lr.readLine()) != null && str.length() > 0){
     			
-    			lineNumber ++;
+//    			System.out.println(lineNumber);
+    			lineNumber ++;    			
     			recordType = getRecordType(str);
     			
     			record_RF = getRecordLayout(str, recordType);   	    	
@@ -169,19 +171,18 @@ public class LauncherButtonClickListener implements ActionListener{
 	    		if (sheet_ml == null){
 	    			
 		    		sheet_ml = wb.createSheet(recordType);		    		
-		    		
-	        		Iterator<LayoutVector> it = record_RF.getArrayLV().iterator();
-	    	        while (it.hasNext()){
-	    	        	LayoutVector lv = it.next();
-	    	        	headers += lv.getFieldName() + ";";
-	    	        }  
-	    	        
-	    	        recType_currenRow.put(sheet_ml.getSheetName(), new Integer(0));
-	    	        writeLine(headers, true, wb, sheet_ml);
-	    	        headers = "";   	        	    	        
+	    	        initializeSheet(sheet_ml, wb, headers, record_RF);
 	    		}
 	    			
 	    		record_RF = layouts.get(recordType);
+	    		System.out.println(sheet_ml.getSheetName() + " - " + recType_currenRow.get(sheet_ml.getSheetName()));
+	    		if(recType_currenRow.get(sheet_ml.getSheetName()) == PublicConstants.EXCEL_MAX_ROWS){
+	    			wb.write(excelFile);
+	    			excelFile.close();
+	    			excelFile = new FileOutputStream(savedFilename + "_" + index);
+	    			index++;
+	    			initializeSheet(sheet_ml, wb, headers, record_RF);
+	    		}
     	        writeLine(getInterfaceRecord(str, record_RF.getArrayLV()), false, wb, sheet_ml);		    			
 
     		}
@@ -198,6 +199,19 @@ public class LauncherButtonClickListener implements ActionListener{
 	     }
 	}
 	
+	private void initializeSheet(Sheet sheet_IS, Workbook wb_IS, String headers_IS, Record record_IS) throws Exception {
+		
+		Iterator<LayoutVector> it = record_IS.getArrayLV().iterator();
+        while (it.hasNext()){
+        	LayoutVector lv = it.next();
+        	headers_IS += lv.getFieldName() + ";";
+        }
+        
+        recType_currenRow.put(sheet_IS.getSheetName(), new Integer(0));
+        writeLine(headers_IS, true, wb_IS, sheet_IS);
+        headers_IS = ""; 		
+	}
+
 	private Record getRecordLayout(String str_GRL, String recordType_GRL) throws Exception{
 		
 		Record record_GRL = null;
