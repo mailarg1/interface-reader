@@ -176,10 +176,10 @@ public class LauncherButtonClickListener implements ActionListener{
 	    			
 	    		record_RF = layouts.get(recordType);
 	    		System.out.println(sheet_ml.getSheetName() + " - " + recType_currenRow.get(sheet_ml.getSheetName()));
-	    		if(recType_currenRow.get(sheet_ml.getSheetName()) == PublicConstants.EXCEL_MAX_ROWS){
+	    		if(recType_currenRow.get(sheet_ml.getSheetName()) == PublicConstants.EXCEL_MAX_ROWS.intValue()){
 	    			wb.write(excelFile);
 	    			excelFile.close();
-	    			excelFile = new FileOutputStream(savedFilename + "_" + index);
+	    			excelFile = new FileOutputStream(feedFileName.getPath() + "_" + index + ".xlsx");
 	    			index++;
 	    			initializeSheet(sheet_ml, wb, headers, record_RF);
 	    		}
