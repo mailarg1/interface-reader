@@ -160,7 +160,6 @@ public class LauncherButtonClickListener implements ActionListener{
 	    	
     		while((str = lr.readLine()) != null && str.length() > 0){
     			
-//    			System.out.println(lineNumber);
     			lineNumber ++;    			
     			recordType = getRecordType(str);
     			
@@ -174,13 +173,15 @@ public class LauncherButtonClickListener implements ActionListener{
 	    	        initializeSheet(sheet_ml, wb, headers, record_RF);
 	    		}
 	    			
-	    		record_RF = layouts.get(recordType);
-	    		System.out.println(sheet_ml.getSheetName() + " - " + recType_currenRow.get(sheet_ml.getSheetName()));
+	    		record_RF = layouts.get(recordType);	    		
 	    		if(recType_currenRow.get(sheet_ml.getSheetName()) == PublicConstants.EXCEL_MAX_ROWS.intValue()){
 	    			wb.write(excelFile);
-	    			excelFile.close();
+	    			if (excelFile != null) 
+	    				excelFile.close();
 	    			excelFile = new FileOutputStream(feedFileName.getPath() + "_" + index + ".xlsx");
+	    			wb = new XSSFWorkbook();
 	    			index++;
+	    			sheet_ml = wb.createSheet(recordType);
 	    			initializeSheet(sheet_ml, wb, headers, record_RF);
 	    		}
     	        writeLine(getInterfaceRecord(str, record_RF.getArrayLV()), false, wb, sheet_ml);		    			
@@ -195,7 +196,8 @@ public class LauncherButtonClickListener implements ActionListener{
         		fr.close();
         	if (lr != null)
         		lr.close();	
-			excelFile.close();
+			if (excelFile != null) 
+				excelFile.close();
 	     }
 	}
 	
