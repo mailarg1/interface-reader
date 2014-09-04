@@ -26,7 +26,7 @@ import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 
 
 public class LauncherButtonClickListener implements ActionListener{
@@ -156,7 +156,7 @@ public class LauncherButtonClickListener implements ActionListener{
 	        fr = new FileReader(filename);
 	        lr = new LineNumberReader(fr);
 	        excelFile = new FileOutputStream(savedFilename);	        
-    		Workbook wb = new XSSFWorkbook();  // or new XSSFWorkbook();
+	        SXSSFWorkbook wb = new SXSSFWorkbook(PublicConstants.EXCEL_MAX_MEMORY_ROWS.intValue());
 	    	
     		while((str = lr.readLine()) != null && str.length() > 0){
     			
@@ -179,7 +179,7 @@ public class LauncherButtonClickListener implements ActionListener{
 	    			if (excelFile != null) 
 	    				excelFile.close();
 	    			excelFile = new FileOutputStream(feedFileName.getPath() + "_" + index + ".xlsx");
-	    			wb = new XSSFWorkbook();
+	    			wb = new SXSSFWorkbook(PublicConstants.EXCEL_MAX_MEMORY_ROWS.intValue());
 	    			index++;
 	    			sheet_ml = wb.createSheet(recordType);
 	    			initializeSheet(sheet_ml, wb, headers, record_RF);
@@ -331,7 +331,10 @@ public class LauncherButtonClickListener implements ActionListener{
 			}					
 		}
 		
-
+		fv = null;	
+		it = null;
+		str_remaining = null;
+		value = null;
 		return record;
 	}
 
