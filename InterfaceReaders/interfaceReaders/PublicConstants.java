@@ -11,4 +11,7 @@ public final class PublicConstants {
 	public static String PIPE = "|";
 	public static String SCAPECHARS = "\\";
 	public static String LOGFILE = ".\\InterfaceReader.log";
+	public static Integer EXCEL_MAX_ROWS = new Integer(80000);
+	public static Integer EXCEL_MAX_MEMORY_ROWS = new Integer(100);
+		
 }
