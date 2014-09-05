@@ -218,7 +218,7 @@ public class LauncherButtonClickListener implements ActionListener{
 		
 		Record record = null;
 		String filename = feedFileName.getPath();
-		InterfaceParameters lparam_GRL = parent.getParameters().get(interfaceName);
+		InterfaceParameters parameters = parent.getParameters().get(interfaceName);
 		
 		record = layouts.get(recordType);
 		
@@ -226,7 +226,7 @@ public class LauncherButtonClickListener implements ActionListener{
 		//Validation
 		if (record == null){
 			throw new Exception("While reading file \""+ filename + "\" at line "+ lineNumber + ":\n"
-					+ "Record type \"" + (recordType.equalsIgnoreCase("0")? null : recordType) + ("\" not found in layout \"" + lparam_GRL.getLayoutFileName() + "\". Record type start position " + lparam_GRL.getRecordTypeStartPosition() + ", Length "+ lparam_GRL.getRecordTypeLenght() +".\n")
+					+ "Record type \"" + (recordType.equalsIgnoreCase("0")? null : recordType) + ("\" not found in layout \"" + parameters.getLayoutFileName() + "\". Record type start position " + parameters.getRecordTypeStartPosition() + ", Length "+ parameters.getRecordTypeLenght() +".\n")
 					+ "Record: " + str + "\n");			
 		}
 		
