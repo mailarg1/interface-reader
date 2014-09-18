@@ -4,9 +4,6 @@ public final class InterfaceParameters {
 
 	private String interfaceName;
 	private String layoutFileName;
-	private int recordTypeId;
-	private int recordTypeStartPosition;
-	private int recordTypeLenght;
 
 	
 	/**
@@ -32,44 +29,6 @@ public final class InterfaceParameters {
 	 */
 	public void setLayoutFileName(String layoutFileName) {
 		this.layoutFileName = layoutFileName;
-	}
-
-	/**
-	 * @return the recordTypeId
-	 */
-	public int getRecordTypeId() {
-		return recordTypeId;
-	}
-	/**
-	 * @param recordTypeId the recordTypeId to set
-	 */
-	public void setRecordTypeId(int recordTypeId) {
-		this.recordTypeId = recordTypeId;
-	}
-	
-	/**
-	 * @return the recordTypeStartPosition
-	 */
-	public int getRecordTypeStartPosition() {
-		return recordTypeStartPosition;
-	}
-	/**
-	 * @param recordTypeStartPosition the recordTypeStartPosition to set
-	 */
-	public void setRecordTypeStartPosition(int recordTypeStartPosition) {
-		this.recordTypeStartPosition = recordTypeStartPosition;
-	}
-	/**
-	 * @return the recordTypeLenght
-	 */
-	public int getRecordTypeLenght() {
-		return recordTypeLenght;
-	}
-	/**
-	 * @param recordTypeLenght the recordTypeLenght to set
-	 */
-	public void setRecordTypeLenght(int recordTypeLenght) {
-		this.recordTypeLenght = recordTypeLenght;
 	}
 
 }

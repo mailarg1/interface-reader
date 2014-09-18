@@ -5,12 +5,16 @@ import java.util.ArrayList;
 public class Record {
 	private String id;
 	private int size;
+	private boolean variableLenght;
+	private int recordTypeStartPosition;
+	private int recordTypeLenght;		
 	private ArrayList<LayoutVector> arrayLV;
 	
 	
 	public Record(){
 		id = null;
 		size = 0;
+		variableLenght = false;
 		arrayLV = new ArrayList<LayoutVector>();
 	}
 
@@ -44,6 +48,53 @@ public class Record {
 	 */
 	public void setSize(int size) {
 		this.size = size;
+	}
+
+	
+	/**
+	 * @return the variableLenght
+	 */
+	public boolean isVariableLenght() {
+		return variableLenght;
+	}
+
+
+	/**
+	 * @param variableLenght the variableLenght to set
+	 */
+	public void setVariableLenght(boolean variableLenght) {
+		this.variableLenght = variableLenght;
+	}	
+
+	/**
+	 * @return the recordTypeStartPosition
+	 */
+	public int getRecordTypeStartPosition() {
+		return recordTypeStartPosition;
+	}
+
+
+	/**
+	 * @param recordTypeStartPosition the recordTypeStartPosition to set
+	 */
+	public void setRecordTypeStartPosition(int recordTypeStartPosition) {
+		this.recordTypeStartPosition = recordTypeStartPosition;
+	}
+
+
+	/**
+	 * @return the recordTypeLenght
+	 */
+	public int getRecordTypeLenght() {
+		return recordTypeLenght;
+	}
+
+
+	/**
+	 * @param recordTypeLenght the recordTypeLenght to set
+	 */
+	public void setRecordTypeLenght(int recordTypeLenght) {
+		this.recordTypeLenght = recordTypeLenght;
 	}
 
 

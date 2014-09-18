@@ -10,6 +10,7 @@ public class LayoutVector {
 	private boolean cobolFlag;
 	private String delimiter;
 	private boolean variableOcurrence;
+	private boolean isRecordType;
 	
 
 	public LayoutVector(){
@@ -127,6 +128,20 @@ public class LayoutVector {
 	 */
 	public void setVariableOcurrence(boolean variableOcurrence) {
 		this.variableOcurrence = variableOcurrence;
+	}
+
+	/**
+	 * @param isRecordType the isRecordType to set
+	 */
+	public void setIsRecordType(boolean isRecordType) {
+		this.isRecordType = isRecordType;
+	}
+
+	/**
+	 * @return the isRecordType
+	 */
+	public boolean isRecordType() {
+		return isRecordType;
 	}
 
 }
