@@ -46,6 +46,7 @@ public class LauncherButtonClickListener implements ActionListener{
 		parent = launcher;
 		layouts  = new Hashtable<String, Record>();
 		recType_currenRow = new Hashtable<String, Integer>();
+		multiRecordType = false;
 	}
 	
 	@Override
@@ -73,7 +74,6 @@ public class LauncherButtonClickListener implements ActionListener{
         	        	
         	feedFileName = new File(parent.getDataFileTxtField().getText());
         	interfaceName = parent.getFeedComboBox().getSelectedItem().toString();
-        	multiRecordType = parent.getParameters().get(interfaceName).getRecordTypeId() == 0 ? false : true;
             
         	JFileChooser fc = new JFileChooser();
         	fc.setSelectedFile(new File(feedFileName.getPath() + ".xlsx"));
@@ -84,7 +84,6 @@ public class LauncherButtonClickListener implements ActionListener{
         		
     			parent.getLogger().log(Level.INFO, 	"Interface Name: "+ parent.getParameters().get(interfaceName).getInterfaceName() + "\n"
 						+	"Interface Layout file name: " + parent.getParameters().get(interfaceName).getLayoutFileName() + "\n"
-						+	"Record Type (field name seq): " + parent.getParameters().get(interfaceName).getRecordTypeId() + "\n"
 						+	"File selected: " + feedFileName.getPath()+ "\n");   
 	            try {
 	            	
@@ -218,7 +217,7 @@ public class LauncherButtonClickListener implements ActionListener{
 		
 		Record record = null;
 		String filename = feedFileName.getPath();
-		InterfaceParameters lparam_GRL = parent.getParameters().get(interfaceName);
+		InterfaceParameters parameters = parent.getParameters().get(interfaceName);
 		
 		record = layouts.get(recordType);
 		
@@ -226,7 +225,7 @@ public class LauncherButtonClickListener implements ActionListener{
 		//Validation
 		if (record == null){
 			throw new Exception("While reading file \""+ filename + "\" at line "+ lineNumber + ":\n"
-					+ "Record type \"" + (recordType.equalsIgnoreCase("0")? null : recordType) + ("\" not found in layout \"" + lparam_GRL.getLayoutFileName() + "\". Record type start position " + lparam_GRL.getRecordTypeStartPosition() + ", Length "+ lparam_GRL.getRecordTypeLenght() +".\n")
+					+ "Record type \"" + (recordType.equalsIgnoreCase("0")? null : recordType) + ("\" not found in layout \"" + parameters.getLayoutFileName() + "\".\n")
 					+ "Record: " + str + "\n");			
 		}
 		
@@ -243,28 +242,79 @@ public class LauncherButtonClickListener implements ActionListener{
 
 	private String getRecordType(String str) throws Exception{
 		
-		InterfaceParameters parameters = parent.getParameters().get(interfaceName);		
-		String 	recordType_out,
-				filename = feedFileName.getPath();
-			
+		String 	recordType_out = null,
+				recordType_aux = null,
+				filename = feedFileName.getPath(),
+				msgError = "",
+				recordTypeMatched = "";
+		int recordLength = 0,
+			strRecordLength = 0;
+		
+		Set<String> keys = null;
+		Iterator<String> it = null;
+		boolean recordTypeFound = false;
+		Record rec = null;
 				
     	if (!multiRecordType) //only one record type
     		recordType_out = feedFileName.getName();
     	else{
-    		try{
-    			recordType_out = str.substring(parameters.getRecordTypeStartPosition(), parameters.getRecordTypeStartPosition() + parameters.getRecordTypeLenght()).trim();
-    		}catch(StringIndexOutOfBoundsException e){
-    			throw new StringIndexOutOfBoundsException("While reading file \""+ filename + "\" at line "+ lineNumber + ":\n"
-    					+ "SubString is unable to get Record Type. Record type start position " + parameters.getRecordTypeStartPosition() + ", Length "+ parameters.getRecordTypeLenght() +". \n"
-    					+ "Record: " + str + "\n");
-    		}
+    		    			
+    			//loop all over the existing layouts
+				keys = layouts.keySet();
+				it = keys.iterator();				
+							
+				while (it.hasNext()){
+					String k = it.next();
+					rec = layouts.get(k);
+					
+					try{
+						recordType_aux = str.substring(rec.getRecordTypeStartPosition(), rec.getRecordTypeStartPosition() + rec.getRecordTypeLenght()).trim();
+						
+						if(recordType_aux.equals(rec.getId()) && !recordTypeFound){
+							recordTypeFound = true;
+							recordTypeMatched = recordType_aux;
+							recordLength = rec.getSize();
+							strRecordLength = str.length();
+						}
+						
+						if(recordType_aux.equals(rec.getId()) && (rec.isVariableLenght() || (str.length() == rec.getSize() && !rec.isVariableLenght()))){ //double check
+							recordType_out = recordType_aux;
+							break;
+						}					
+		    		}catch(StringIndexOutOfBoundsException e){
+		    			parent.getLogger().log(Level.INFO, e.getClass().getName() + " when trying to find the "+ rec.getId() +" Record Type for the string " + str);   			
+		    		}
+				}
+				
+		    	//Validation
+		    	if (recordType_out == null){
+		    		
+		    		//loop over layouts
+		    		String validRecordTypes = "";        		
+					keys = layouts.keySet();
+					it = keys.iterator();				
+								
+					while (it.hasNext()){
+						String k = it.next();
+						rec = layouts.get(k);
+						validRecordTypes += "Record Type " + rec.getId() + " starts at position " + rec.getRecordTypeStartPosition() + " and its length is " + rec.getRecordTypeLenght() + ".\n";
+					}           
+					//
+					
+					if(recordTypeFound){
+							//the only possible error is record length issue
+							msgError = "Record Type was found (\""+recordTypeMatched+"\"), however the record length ("+ recordLength +") missmatches with the one defined in layout ("+ strRecordLength +").";
+					}
+					else
+						msgError = "Unable to find the record type.\nValid Record Types: \n" + validRecordTypes;
+					
+				throw new Exception("While reading file \""+ filename + "\" at line "+ lineNumber + ":\n"
+						+ msgError + "\n"
+						+ "Record: " + str + "\n");
+		    	}				
     	}
-    	
-    	//Validation
-    	if (recordType_out == null || recordType_out.equalsIgnoreCase(""))
-		throw new Exception("While reading file \""+ filename + "\" at line "+ lineNumber + ":\n"
-				+ "Record type = \"" + recordType_out + "\" is not expected for a Multi record types interface. . Record type start position " + parameters.getRecordTypeStartPosition() + ", Length "+ parameters.getRecordTypeLenght() +".\n"
-				+ "Record: " + str + "\n"); 
+
+
     	
     	return recordType_out;
 	}
@@ -300,7 +350,7 @@ public class LauncherButtonClickListener implements ActionListener{
 				size 		= lv.getFieldSize(); 
 				decimals 	= lv.getFieldDecimals();
 				
-				value 			= str_remaining.substring(0,size);
+				value 			= (size == 0) ? str_remaining.substring(0,str_remaining.length()) : str_remaining.substring(0,size); 
 				str_remaining 	= str_remaining.substring(size,str_remaining.length()); 				
 				       		        	
 	        	
@@ -390,31 +440,37 @@ public class LauncherButtonClickListener implements ActionListener{
 					else {
 						
 						lv = getLayoutField(row);				
-						record = layouts.get(lv.getRecordType());
+						record = layouts.get(lv.getRecordType());												
 						
 						if (record == null){ //key not found	
 							
 							record = new Record();
 							record.setId(lv.getRecordType());
+							recordTypeStartPosition = 0;
+							isRecordTypeStartPositionSet = false;
 						}
 						
-						record.getArrayLV().add(lv);
-						record.setSize(record.getSize() + lv.getFieldSize());
-						layouts.put(lv.getRecordType(), record);						
-
+						
+						//set VariableLenght flag. In case the record has a variable length, then this flag is true.
+						if (lv.isVariableOcurrence() && !record.isVariableLenght())
+							record.setVariableLenght(true);
 						
 						if (lv.getRecordType() != null){ //it means there is more than one record type	
 							
 							//Calculate RecordType start position and RecordType length on sheet #1.					
-							if(lv.getFieldNameSeq() < parameters.getRecordTypeId() && !isRecordTypeStartPositionSet)
+							if(!lv.isRecordType() && !isRecordTypeStartPositionSet)
 								recordTypeStartPosition += lv.getFieldSize();															
 							
-							if (lv.getFieldNameSeq() == parameters.getRecordTypeId() && !isRecordTypeStartPositionSet){
-								parent.getParameters().get(interfaceName).setRecordTypeLenght(lv.getFieldSize());
-								parent.getParameters().get(interfaceName).setRecordTypeStartPosition(recordTypeStartPosition);
+							if (lv.isRecordType() && !isRecordTypeStartPositionSet){
+								record.setRecordTypeLenght(lv.getFieldSize());
+								record.setRecordTypeStartPosition(recordTypeStartPosition);
 								isRecordTypeStartPositionSet = true;
 							}							
-						}
+						}				        								
+						
+						record.getArrayLV().add(lv);
+						record.setSize(record.getSize() + lv.getFieldSize());
+						layouts.put(lv.getRecordType(), record);						
 						
 						//Get field name max length to print layout reading log
 						fieldNameLength = lv.getFieldName().length();
@@ -427,29 +483,30 @@ public class LauncherButtonClickListener implements ActionListener{
 		
 				Set<String> keys = layouts.keySet();
 				Iterator<String> it = keys.iterator();
-				String cobolFlag, variableOcurrence, log_var = "";
+				String cobolFlag, variableOcurrence, isRecordType, log_var = "", variableLength;
 				
 				
 				while (it.hasNext()){
 					String k = it.next();
 					Record rec = layouts.get(k);
-					log_var += "Record: " + rec.getId() + " | " + "Size: " + rec.getSize() + "\n";
+					if (rec.isVariableLenght()) variableLength = "VL: TRUE"; else variableLength = "VL: FALSE";
+					log_var += "Record: " + rec.getId() + " | " + "Size: " + rec.getSize() + " | " + "Record Type Start Position: " + rec.getRecordTypeStartPosition() + " | " + "Record Type Length: " + rec.getRecordTypeLenght() + " | " + "Variable Lengt: " + variableLength + "\n";
 //					System.out.println("Record: " + rec.getId() + " | " + "Size: " + rec.getSize());
 					Iterator<LayoutVector> it2 = rec.getArrayLV().iterator();					
 					while (it2.hasNext()){
 						LayoutVector lv2 = it2.next();
 						if (lv2.isCobolFlag()) cobolFlag = "CF: TRUE"; else cobolFlag = "CF: FALSE";
 						if (lv2.isVariableOcurrence()) variableOcurrence = "VO: TRUE"; else variableOcurrence = "VO: FALSE";
+						if (lv2.isRecordType()) isRecordType = "IsRT: TRUE"; else isRecordType = "IsRT: FALSE";
 						
-						log_var += "RT: " + lv2.getRecordType() + " | " + "FNS: " + lv2.getFieldNameSeq() + " | " + "FN: " + String.format("%-"+fieldNameMaxLength+"s", lv2.getFieldName()).replace(' ', ' ') + " | " + "FS: " + lv2.getFieldSize() + " | " + "FD: " + lv2.getFieldDecimals() + " | " + cobolFlag + " | " + "D: " + lv2.getDelimiter() + " | " + variableOcurrence + "\n";
-//						System.out.println("RT: " + lv.getRecordType() + " | " + "FNS: " + lv.getFieldNameSeq() + " | " + "FN: " + String.format("%-"+fieldNameMaxLength+"s", lv.getFieldName()).replace(' ', ' ') + " | " + "FS: " + lv.getFieldSize() + " | " + "FD: " + lv.getFieldDecimals() + " | " + cobolFlag + " | " + "D: " + lv.getDelimiter() + " | " + variableOcurrence);								       		
+						log_var += "RT: " + lv2.getRecordType() + " | " + "FNS: " + lv2.getFieldNameSeq() + " | " + "FN: " + String.format("%-"+fieldNameMaxLength+"s", lv2.getFieldName()).replace(' ', ' ') + " | " + "FS: " + lv2.getFieldSize() + " | " + "FD: " + lv2.getFieldDecimals() + " | " + cobolFlag + " | " + "D: " + lv2.getDelimiter() + " | " + variableOcurrence + " | " + isRecordType + "\n";
+//						System.out.println("RT: " + lv.getRecordType() + " | " + "FNS: " + lv.getFieldNameSeq() + " | " + "FN: " + String.format("%-"+fieldNameMaxLength+"s", lv.getFieldName()).replace(' ', ' ') + " | " + "FS: " + lv.getFieldSize() + " | " + "FD: " + lv.getFieldDecimals() + " | " + cobolFlag + " | " + "D: " + lv.getDelimiter() + " | " + variableOcurrence + " | " + isRecordType);								       		
 					}
 					log_var += "\n";
 //					System.out.print("\n");
 					
 				}
 				log_var += "------------" + "\n";
-				log_var += "RecordType Start position: "+parent.getParameters().get(interfaceName).getRecordTypeStartPosition() + ", Length: " + parent.getParameters().get(interfaceName).getRecordTypeLenght() + "\n";
 				log_var += "Read Layout DONE" + "\n";
 				parent.getLogger().log(Level.INFO, log_var);
 //				System.out.println("------------");
@@ -466,7 +523,13 @@ public class LauncherButtonClickListener implements ActionListener{
 		LayoutVector lv = new LayoutVector();
 				
 		String recordType = row.getCell(0).getStringCellValue();
-		lv.setRecordType(recordType.isEmpty() ? feedFileName.getName() : recordType);
+		if(recordType.isEmpty())
+			lv.setRecordType(feedFileName.getName());
+		else{
+			lv.setRecordType(recordType);
+			multiRecordType = true;
+		}
+		
 		
 		lv.setFieldNameSeq(Double.valueOf(row.getCell(1).getNumericCellValue()).intValue());
 		lv.setFieldName(row.getCell(2).getStringCellValue());
@@ -488,7 +551,10 @@ public class LauncherButtonClickListener implements ActionListener{
 		lv.setDelimiter(delimiter.isEmpty() ? null : delimiter);	
 		
 		String isVariable = row.getCell(7).getStringCellValue();
-		lv.setVariableOcurrence(isVariable.isEmpty() ? false : true);		
+		lv.setVariableOcurrence(isVariable.isEmpty() ? false : true);
+		
+		String isRecordType = row.getCell(8).getStringCellValue();
+		lv.setIsRecordType(isRecordType.isEmpty() ? false : true);		
 		
 		return lv;
 	}

@@ -24,14 +24,13 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 
 public class Launcher extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	private static final String version = "Version 0.8";
+	private static final String version = "Version 0.9";
 	private JLabel label;
 	private JLabel doneLabel;
 	private JComboBox feedComboBox;
@@ -143,12 +142,7 @@ public class Launcher extends JFrame{
 				else {											
 					lp_RLP  = new InterfaceParameters();
 					lp_RLP.setInterfaceName(row.getCell(0).getStringCellValue());
-					lp_RLP.setLayoutFileName(row.getCell(1).getStringCellValue());
-					
-					if (row.getCell(2) == null || row.getCell(2).getCellType() == Cell.CELL_TYPE_BLANK) 
-						lp_RLP.setRecordTypeId(0); //0 means no record type set => only one record type
-					else
-						lp_RLP.setRecordTypeId(Double.valueOf(row.getCell(2).getNumericCellValue()).intValue());										
+					lp_RLP.setLayoutFileName(row.getCell(1).getStringCellValue());													
 					
 					parameters.put(lp_RLP.getInterfaceName(), lp_RLP);
 				}
