@@ -282,7 +282,7 @@ public class LauncherButtonClickListener implements ActionListener{
 							break;
 						}					
 		    		}catch(StringIndexOutOfBoundsException e){
-		    			parent.getLogger().log(Level.INFO, e.getClass().getName() + " when trying to find the "+ rec.getId() +" Record Type for the string " + str);   			
+		    			parent.getLogger().log(Level.INFO, e.getClass().getName() + " when trying to find the "+ rec.getId() +" Record Type for the string \"" + str + "\" (feed line number " + lineNumber + ")");   			
 		    		}
 				}
 				
@@ -439,7 +439,7 @@ public class LauncherButtonClickListener implements ActionListener{
 						headerRow = false;
 					else {
 						
-						lv = getLayoutField(row);				
+						lv = getLayoutFields(row);				
 						record = layouts.get(lv.getRecordType());												
 						
 						if (record == null){ //key not found	
@@ -480,7 +480,7 @@ public class LauncherButtonClickListener implements ActionListener{
 					
 
 				}
-		
+								
 				Set<String> keys = layouts.keySet();
 				Iterator<String> it = keys.iterator();
 				String cobolFlag, variableOcurrence, isRecordType, log_var = "", variableLength;
@@ -503,10 +503,17 @@ public class LauncherButtonClickListener implements ActionListener{
 //						System.out.println("RT: " + lv.getRecordType() + " | " + "FNS: " + lv.getFieldNameSeq() + " | " + "FN: " + String.format("%-"+fieldNameMaxLength+"s", lv.getFieldName()).replace(' ', ' ') + " | " + "FS: " + lv.getFieldSize() + " | " + "FD: " + lv.getFieldDecimals() + " | " + cobolFlag + " | " + "D: " + lv.getDelimiter() + " | " + variableOcurrence + " | " + isRecordType);								       		
 					}
 					log_var += "\n";
-//					System.out.print("\n");
-					
+//					System.out.print("\n");					
 				}
+								
 				log_var += "------------" + "\n";
+				
+				if (multiRecordType)
+					parent.getLogger().log(Level.INFO, "Multi Record feed: YES\n\n");
+				else
+					parent.getLogger().log(Level.INFO, "Multi Record feed: NO\n\n");
+				
+				
 				log_var += "Read Layout DONE" + "\n";
 				parent.getLogger().log(Level.INFO, log_var);
 //				System.out.println("------------");
@@ -519,7 +526,7 @@ public class LauncherButtonClickListener implements ActionListener{
 		}
 	}
 
-	private LayoutVector getLayoutField(Row row) {
+	private LayoutVector getLayoutFields(Row row) {
 		LayoutVector lv = new LayoutVector();
 				
 		String recordType = row.getCell(0).getStringCellValue();
@@ -527,7 +534,8 @@ public class LauncherButtonClickListener implements ActionListener{
 			lv.setRecordType(feedFileName.getName());
 		else{
 			lv.setRecordType(recordType);
-			multiRecordType = true;
+			if (!multiRecordType)
+				multiRecordType = true;
 		}
 		
 		
