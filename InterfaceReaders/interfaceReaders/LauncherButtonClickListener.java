@@ -45,8 +45,7 @@ public class LauncherButtonClickListener implements ActionListener{
 	public LauncherButtonClickListener(Launcher launcher){
 		parent = launcher;
 		layouts  = new Hashtable<String, Record>();
-		recType_currenRow = new Hashtable<String, Integer>();
-		multiRecordType = false;
+		recType_currenRow = new Hashtable<String, Integer>();		
 	}
 	
 	@Override
@@ -89,7 +88,8 @@ public class LauncherButtonClickListener implements ActionListener{
 	            	
 	        		getReadyBusyState(true);
 	                File file = fc.getSelectedFile();   
-	                savedFilename = file.getPath();	            	
+	                savedFilename = file.getPath();	
+	                multiRecordType = false;
 					readLayout(); 					
 					readFile();
 		            getReadyBusyState(false);
