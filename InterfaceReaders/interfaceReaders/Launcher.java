@@ -4,15 +4,17 @@ package interfaceReaders;
 import java.awt.Color;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
-
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -156,8 +158,14 @@ public class Launcher extends JFrame{
 	
 	public void loadInterfaceList() {
 		feedComboBox.removeAllItems();
-        Set<String> keys = parameters.keySet();
-        Iterator<String> it = keys.iterator();
+        Set<String> keys = parameters.keySet(); 
+        
+        //Sort the Set converting it into List
+        List<String> list = new ArrayList<String>(keys);
+        Collections.sort(list);
+        // End of sorting
+        
+        Iterator<String> it = list.iterator();
         while (it.hasNext()){
         	feedComboBox.addItem(it.next());
         }
