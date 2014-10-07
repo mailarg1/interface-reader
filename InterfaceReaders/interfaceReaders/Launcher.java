@@ -32,7 +32,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 public class Launcher extends JFrame{
 
 	private static final long serialVersionUID = 1L;
-	private static final String version = "Version 0.9";
+	private static final String version = "Version 1.0";
 	private JLabel label;
 	private JLabel doneLabel;
 	private JComboBox feedComboBox;
